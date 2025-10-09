@@ -1,0 +1,21 @@
+función del registel bro
+
+Conecta a la base de datos
+
+se ejecuta si el formulario vino con post
+
+guarda lo que el usuario escribe en cedula, correo y blah blah
+
+encripta la contraseña con el password_hash
+
+comprueba que no haya campos vacíos
+
+ve si el correo o la cedula ya existen
+
+si existe tira error
+
+si no existe los inserta en la base
+
+si la inserción funciona te manda para el login
+
+si falla te muestra error

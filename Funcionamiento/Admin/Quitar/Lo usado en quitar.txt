@@ -1,0 +1,16 @@
+require_once "../db.php"; (conecta la base de datos)
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") { (Verifica si se usa el modo post)
+
+$ci_usuario = $_POST['ci_usuario']; (Toma el valor de ci y lo guarda en la var $ci_usuario)
+
+if ($ci_usuario) { (Verifica que ci_usuario tiene algún valor, si no tiene no hace nada)
+
+$delete = $db->query("DELETE FROM empleado WHERE ci_usuario='$ci_usuario'"); (Acá se ejecuta la consulta para eliminar a un empleado de la tabla de empleado, solo elimina al que coincida con el que recibe del formulario, el resultado se guarda en $delete)
+
+if ($delete) {
+    header("Location: admin.php");
+    exit;
+} else {
+    echo "Error al eliminar el barbero <a href='admin.php'>Volver</a>";
+} (Si $delete sale bien te redirige a admin.php y se detiene el código, si sale un error te muestra un error y un enlace para volver)

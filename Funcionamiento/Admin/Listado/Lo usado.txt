@@ -1,0 +1,38 @@
+require_once "../db.php"; (Para conectar a la base)
+
+$sql = "
+  SELECT ci_usuario, nombre, correo, 'Empleado' as rol FROM empleado
+  UNION
+  SELECT ci_usuario, nombre, correo, 'Cliente' as rol FROM cliente
+  ORDER BY ci_usuario
+"; (Se junta empleado y cliente en una sola lista)
+
+$resultado = $db->query($sql); (Se ejecuta la consulta)
+
+if ($resultado && $resultado->num_rows > 0) (Verifica si hay registros, si es mayor a 1 es porque encontró al menos 1 usuario)
+
+echo "<table class='tabla-usuarios'>";
+echo "<thead>
+        <tr>
+            <th>Cédula</th>
+            <th>Nombre</th>
+            <th>Correo</th>
+            <th>Rol</th>
+        </tr>
+      </thead>";
+echo "<tbody>"; (Se imprime la tabla con cedula, nombre, correo y rol)
+
+while ($usuario = $resultado->fetch_assoc()) {
+    echo "<tr>";
+    echo "<td>{$usuario['ci_usuario']}</td>";
+    echo "<td>{$usuario['nombre']}</td>";
+    echo "<td>{$usuario['correo']}</td>";
+    echo "<td>{$usuario['rol']}</td>";
+    echo "</tr>";
+} (Recorre los usuarios y trae cada fila de la consulta como un arreglo asociativo y se imprimen los vablores en las celdas de la tabla)
+
+echo "</tbody></table>"; (Se cierra la tbla)
+
+ else {
+    echo "<p>No hay usuarios registrados</p>";
+} (Si no hay usuarios muestra ese mensaje)

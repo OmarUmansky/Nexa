@@ -1,0 +1,24 @@
+requiere_once (conecta con el archivo de la base de datinhos)
+
+$_SERVER["REQUEST_METHOD"] (dice si el formulario se envió en post)
+
+$_POST['campo'] (agarra lo que usuario escribió en el formulario)
+
+password_hash (convierte la pass en cifrado)
+
+password_default (usa el algoritmo seguro de php por defecto)
+
+!= (para ver si está vacio)
+
+$db->query(...) (ejecuta un sql de la bd)
+
+SELECT * FROM cliente … (Busca si ya existe un cliente con ese correo o ced)
+
+$check->num_rows (Chequea cuantos resultados devuelve, si es mayor de 0 es porque ya se usó la ced o el correo)
+
+INSERT INTO cliente (...) VALUES (...) (Inserta el nuevo usuario en la tabla)
+
+if ($insert) (Si la inserción funcionó)
+
+header("Location: …") (Manda al usuario a el login.php)
+

@@ -1,0 +1,12 @@
+El código revisa si alguien está logueado ($_SESSION['usuario'])
+
+Esto lo que hace es fijarse si hay un usuario en sesión si lo hay muestra su nombre y el botón de cerrar sesión y si no hay nadie muestra los botones de registrar e iniciar sesión
+
+<?php
+                      if (isset($_SESSION['usuario'])) {
+                        echo "<li>" . $_SESSION['usuario'] . "</li>";
+                        echo "<li><a class='logout' href='Login/logout.php'>Cerrar sesión</a></li>";} 
+                      else {
+                        echo "<li><a class='register' href='Register/register.php'>Register</a></li>";
+                        echo "<li><a class='login' href='Login/login.php'>Iniciar sesión</a></li>";}
+                    ?>

@@ -1,0 +1,19 @@
+window.addEventListener("load", function() { … }) (Espera a que se cargue toda la pagina, php, tabla todo, entonces empieza a ejecutar el resto del codigo)
+
+var buscador = document.getElementById("buscadorUsuarios"); (Busca el input donde escribis para filtrar)
+
+buscador.addEventListener("keyup", function() { … }) (cada que escribis o borras una letra en el filtro, ejecuta lo que está dentro de la funcion, keyup significa que se activa cuando levantas la tecla)
+
+mostrarVentana('usuarios'); (llama a la funcion que abre la seccion de usuarios y asegura que la tabla esté visible cuando la filtras)
+
+var texto = buscador.value.toLowerCase(); (toma lo que escribiste en el filtro y lo convierte a miniscula para que la busqueda no distintiga mayusculas de mnsiculas)
+
+var filas = document.querySelectorAll("#usuarios .tabla-usuarios tbody tr"); (busca todas las filas de la tabla de usuarios cada fila representa un usuariod diferente)
+
+filas.forEach(function(fila) { … }) (recorre una por una de todas las filas, dentro de esa funcion vamo a decidir si mostrar o ocultar cada fila)
+
+var nombre = fila.cells[1].textContent.toLowerCase(); (toma el texto de la columna nombre de esa fila lo pasa en minisculas para comparar lo que escribis)
+
+var rol = fila.cells[3].textContent.toLowerCase() (toma el texto de la columna rol y lo pasa a minisculas)
+
+fila.style.display = (nombre.includes(texto) || rol.includes(texto)) ? "" : "none"; (comprueba si el nombre o el rol contiene lo que escribiste y si coincide se muestra display y si no es display none)

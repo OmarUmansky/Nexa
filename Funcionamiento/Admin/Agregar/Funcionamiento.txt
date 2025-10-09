@@ -1,0 +1,19 @@
+Conecta la base de datos
+
+verifica si el form se mandó en post
+
+guarda los datos del form en cedula, nombre apellido, correo, contraseña, horarios en variables
+
+cifra la contraseña
+
+comprueba si los campos están completos
+
+revisa si ya hay barberos con esa cedula o correo
+
+si existe muestra un msj de ya registrado, si no inserta los datos del nuevo barbero en la bd
+
+si la inserción sale bien te muestra mensaje de éxito
+
+si no, muestra msj de error
+
+si faltan campos muestra un msj pidiendo co

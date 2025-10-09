@@ -1,0 +1,24 @@
+Se conecta a la base de datos
+
+revisa si el usuario mando el formulario
+
+toma el nombre y la contraseña
+
+verifica que no estén vacios
+
+se revisa si se entró como admin
+
+si se entra e dmin guarda la sesion como admin y lo manda al inicio
+
+si no es admin busca el nombre en la tabla clientes
+
+si existe compara la contrasea y si está bien guarda la sesion como el cliente y lo manda al inicio
+
+si está mal muestra msj de error
+
+si no está en clientes recisa el nombre en la tabla de los empleados
+
+si existe compara la contraseña si está bien lo manda al inicio
+
+si np está en ninguna tabla muestra mensaje de error
+si el formulario no fue enviado te envia al login

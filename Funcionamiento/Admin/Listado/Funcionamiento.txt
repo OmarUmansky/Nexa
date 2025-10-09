@@ -1,0 +1,19 @@
+Conecta la base de datos
+
+hace la consulta de empleados y clientes juntos
+
+ejecuta la consulta
+
+revisa si hay resultados
+
+si hay crea la tabla
+
+escribe los encabezados cedula, nombre, correo y rol
+
+recorre los usuarios uno por uno
+
+imprime los datos en las filas
+
+cierra la tabla
+
+si no hay muestra mensaje de no hay usuarios registrados

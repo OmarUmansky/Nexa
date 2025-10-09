@@ -1,0 +1,5 @@
+espera que cargue la pagina
+
+buscca el cuadro de busuqeda
+
+cada vez que se escribe algo se abre la ventana de usuarios, toma el texto escrito, busca en todas las filas de la tabla, recorre cada fila, toma el nombre y rol, si coinciden con lo escrrito muestra la fila, si no, la oculta

@@ -1,0 +1,29 @@
+session_start() (Crea o continua una sesión) (Como una cajita donde guardo datos del usuario mientras navega)
+
+requiere (trae al archivo php que hay que usar, conecta la base de datos y si el archivo no existe se termina el programa)
+
+$_SERVER["REQUEST_METHOD"] (Dice como se envió la pagina) (Post) formulario enviado
+
+trim() (Saca los espacios en blanco al principio y al final)
+
+?? (Si no existe, usa eso)
+
+!= (Comprueba que no esté vacio)
+
+$db->prepare(prepara la consulta segura para la base de datos)
+
+? en SQL (Lugar que luego se reemplaza con algún valor real y evita que alguien meta código malo) (SQL Injection)
+
+bind_param("s", $nombre) (Rellena el ? con el valor real del usuario y S significa string (texto))
+
+execute() (Trae la fila de resultados de la consulta, devuelve true si encontró algo y false si no)
+
+password_verify($password, $hash) (Compara la contraseña con la que escribimos con la contraseña encriptada de la BD, te da true si coincide y false si no)
+
+$_SESSION['usuario'] = $nombre (Guarda el usuario en la cajita de sesión para usarlo en otra pagina
+
+header("Location ../index.php") (Redirige al usuario al index)
+
+exit; (Detiene el código ahí mismo)
+
+echo (Muestra un mensaje en la pagina)

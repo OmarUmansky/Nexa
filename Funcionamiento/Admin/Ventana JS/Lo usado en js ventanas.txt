@@ -1,0 +1,13 @@
+function mostrarVentana(id) (Definimos la función mostrarventana y recibe parámetro id (para ver la ventana a mostrar))
+
+const ventanas = document.querySelectorAll('.ventana, #inicio'); (Crea la lista de elemento llamda ventanas, selecciona todos los elementos que usen la clase ventana o id inicio y las recoge)
+
+ventanas.forEach(v => {
+  v.classList.remove('ventana-activa');
+}); (Recorre las ventanas seleccionadas para cada ventana v le quita la clase ventana-activa y segura que ninguna ande activa antes de la nueva)
+
+const ventanaSeleccionada = document.getElementById(id); (Busca la ventana especifica que va a mostrar usando el id y se guarda en la variable ventanaseleccionada)
+
+if (ventanaSeleccionada) {
+  ventanaSeleccionada.classList.add('ventana-activa');
+} (sI encuentra la ventana con ese id le agrega la clase ventana-activa para hacerla visible)

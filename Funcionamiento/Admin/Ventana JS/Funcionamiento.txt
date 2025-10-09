@@ -1,0 +1,9 @@
+Toma el id de la ventana a mostrar
+
+selecciona todas las ventanas y la de inicio
+
+quita la clase que hace que anden visibles ellas
+
+busca la ventana que coincida con el id
+
+si existe la agrega a la clase que la hace visible

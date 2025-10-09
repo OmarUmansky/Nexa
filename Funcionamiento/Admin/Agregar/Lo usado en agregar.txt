@@ -1,0 +1,33 @@
+require_once "../db.php"; (la base de datos)
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") (Comprueba si el form se mandó en post)
+
+$ci_usuario = $_POST['ci_usuario'];
+$nombre = $_POST['nombre'];
+$apellido = $_POST['apellido'];
+$correo = $_POST['correo'];
+$contraseña = $_POST['contraseña'];
+$horario_inc = $_POST['horario_inc'];
+$horario_fin = $_POST['horario_fin']; (se guardan los valores de cada campo en variables)
+
+$hash = password_hash($contraseña, PASSWORD_DEFAULT); (Es para cifrar la contraseña)
+
+if ($ci_usuario && $nombre && $apellido && $correo && $contraseña && $horario_inc && $horario_fin) { (Es para verificar que los campos estén llenos antes de ingresar al barbero)
+
+$check = $db->query("SELECT * FROM empleado WHERE ci_usuario='$ci_usuario' OR correo='$correo'");
+if ($check->num_rows > 0) {
+    echo "Este barbero ya está registrado <a href='admin.php'>Volver</a>";
+} else { (Comprueba si ya existe un barbero con esa cedula o correo, si existe te muestra barbero ya registrado y si no continua para agregarlo)
+
+$sql = "INSERT INTO empleado (ci_usuario, nombre, apellido, correo, contraseña, horario_inc, horario_fin) 
+        VALUES ('$ci_usuario', '$nombre', '$apellido', '$correo', '$hash', '$horario_inc', '$horario_fin')"; (Esto es la consulta al sql para insertar el barbero en la tabla empleado)
+
+if ($db->query($sql)) {
+    echo "Barbero agregado correctamente <a href='admin.php'>Volver</a>";
+} else {
+    echo "error al agregar el barbero <a href='admin.php'>Volver</a>";
+} (Si funciona te muestra el msj de éxito y si falla sale el de error)
+
+} else {
+    echo "por favor completa todos los campos <a href='admin.php'>Volver</a>";
+} (Te muestra si faltó completar algún campo)

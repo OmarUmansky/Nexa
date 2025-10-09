@@ -1,0 +1,9 @@
+Conecta la base de datos
+
+verifica si se mandó el form con post
+
+toma el ci_usuario el form
+
+si hay un ciusuario ejecuta la consulta para eliminarlo de empleado
+
+si se eliminó te redirige a admin.php
