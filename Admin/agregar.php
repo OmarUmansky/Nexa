@@ -1,38 +1,79 @@
 <?php
 require_once "../db.php"; // conecta la base de datos
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") { //verifica si el form se mandó en post
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-    $ci_usuario = $_POST['ci_usuario'];
-    $nombre = $_POST['nombre'];
-    $apellido = $_POST['apellido'];
-    $correo = $_POST['correo'];
-    $contraseña = $_POST['contraseña'];
-    $horario_inc = $_POST['horario_inc'];
-    $horario_fin = $_POST['horario_fin']; //se guarda cada campo
+    $ci_usuario = trim($_POST['ci_usuario'] ?? '');
+    $nombre = trim($_POST['nombre'] ?? '');
+    $apellido = trim($_POST['apellido'] ?? '');
+    $correo = trim($_POST['correo'] ?? '');
+    $contraseña = $_POST['contraseña'] ?? '';
+    $rol = $_POST['rol'] ?? '';
 
-    $hash = password_hash($contraseña, PASSWORD_DEFAULT); // se cifra la pass
-
-    if ($ci_usuario && $nombre && $apellido && $correo && $contraseña && $horario_inc && $horario_fin) { // verifica que los campos estén completos
-
-        $check = $db->query("SELECT * FROM empleado WHERE ci_usuario='$ci_usuario' OR correo='$correo'"); // Verifica si hay un barbero con esa cedula o correo y si hay mayor a 1, salé el mensaje de este barbero ya está registrado
-
-        if ($check->num_rows > 0) {
-            echo "Este barbero ya está registrado <a href='admin.php'>Volver</a>";
-        } else {
-
-            $sql = "INSERT INTO empleado (ci_usuario, nombre, apellido, correo, contraseña, horario_inc, horario_fin) 
-                    VALUES ('$ci_usuario', '$nombre', '$apellido', '$correo', '$hash', '$horario_inc', '$horario_fin')"; // se inserta el barbero en el sql
-            
-            if ($db->query($sql)) { // si se inserta bien, se pone barbero agregado correctamente, si no, sale el error
-                echo "Barbero agregado correctamente <a href='admin.php'>Volver</a>";
-            } else {
-                echo "error al agregar el barbero <a href='admin.php'>Volver</a>";
-            }
-        }
-
-    } else { // si falta completar campos sale esto
-        echo "por favor completa todos los campos <a href='admin.php'>Volver</a>";
+    // Validaciones mínimas
+    if ($ci_usuario === '' || $nombre === '' || $apellido === '' || $correo === '' || $contraseña === '' || ($rol !== 'barbero' && $rol !== 'cliente')) {
+        echo "Por favor completa todos los campos requeridos. <a href='admin.php'>Volver</a>";
+        exit;
     }
+
+    if (!filter_var($correo, FILTER_VALIDATE_EMAIL)) {
+        echo "Correo electrónico inválido. <a href='admin.php'>Volver</a>";
+        exit;
+    }
+
+    $hash = password_hash($contraseña, PASSWORD_DEFAULT);
+
+    // Verificar duplicados en ambas tablas (cliente o empleado)
+    $stmt = $db->prepare("SELECT ci_usuario FROM cliente WHERE ci_usuario = ? OR correo = ?");
+    $stmt->bind_param("is", $ci_usuario, $correo);
+    $stmt->execute();
+    $stmt->store_result();
+    $exists_client = $stmt->num_rows > 0;
+    $stmt->close();
+
+    $stmt = $db->prepare("SELECT ci_usuario FROM empleado WHERE ci_usuario = ? OR correo = ?");
+    $stmt->bind_param("is", $ci_usuario, $correo);
+    $stmt->execute();
+    $stmt->store_result();
+    $exists_employee = $stmt->num_rows > 0;
+    $stmt->close();
+
+    if ($exists_client || $exists_employee) {
+        echo "Ya existe un usuario con esa cédula o correo. <a href='admin.php'>Volver</a>";
+        exit;
+    }
+
+    if ($rol === 'barbero') {
+        // Insertar en empleado (sin horarios)
+        $stmt = $db->prepare("INSERT INTO empleado (ci_usuario, nombre, apellido, correo, contraseña) VALUES (?, ?, ?, ?, ?)");
+        if (!$stmt) {
+            echo "Error en la consulta. <a href='admin.php'>Volver</a>";
+            exit;
+        }
+        $stmt->bind_param("issss", $ci_usuario, $nombre, $apellido, $correo, $hash);
+        if ($stmt->execute()) {
+            echo "Barbero agregado correctamente. <a href='admin.php'>Volver</a>";
+        } else {
+            echo "Error al agregar barbero. <a href='admin.php'>Volver</a>";
+        }
+        $stmt->close();
+
+    } else {
+        // Insertar en cliente
+        $stmt = $db->prepare("INSERT INTO cliente (ci_usuario, nombre, apellido, correo, contraseña) VALUES (?, ?, ?, ?, ?)");
+        if (!$stmt) {
+            echo "Error en la consulta. <a href='admin.php'>Volver</a>";
+            exit;
+        }
+        $stmt->bind_param("issss", $ci_usuario, $nombre, $apellido, $correo, $hash);
+        if ($stmt->execute()) {
+            echo "Cliente agregado correctamente. <a href='admin.php'>Volver</a>";
+        } else {
+            echo "Error al agregar cliente. <a href='admin.php'>Volver</a>";
+        }
+        $stmt->close();
+    }
+
 }
+
 ?>

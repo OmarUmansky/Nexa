@@ -42,15 +42,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $fecha = $dt->format("Y-m-d");
     $hora = $dt->format("H:i");
 
-    // Enviar correo
-    $envio = enviarConfirmacionCita($correo_usuario, $usuario, $fecha, $hora);
+    // Obtener nombre del servicio (si el campo en citas almacena el id del servicio)
+    $serv_nombre = null;
+    if (!empty($servicio)) {
+        $stmt3 = $db->prepare("SELECT nombre_servicio FROM servicio WHERE id_servicio = ? LIMIT 1");
+        $stmt3->bind_param("i", $servicio);
+        $stmt3->execute();
+        $res3 = $stmt3->get_result();
+        if ($res3 && $res3->num_rows > 0) {
+            $serv_nombre = $res3->fetch_assoc()['nombre_servicio'];
+        }
+        if ($stmt3) $stmt3->close();
+    }
+
+    if (empty($serv_nombre)) {
+        // Fallback: si no se encontró nombre en la tabla, usar el valor tal cual (puede ser texto)
+        $serv_nombre = $servicio;
+    }
+
+    // Enviar correo (pasando el nombre del servicio)
+    $envio = enviarConfirmacionCita($correo_usuario, $usuario, $fecha, $hora, $serv_nombre);
     if ($envio !== true) {
         echo $envio; // Error al enviar correo
         exit();
     }
 
-    // Redirigir después del envío
-    header("Location: admin.php?mensaje=cita_aceptada");
+    // Borrar la cita ahora que fue aceptada (aceptar implica confirmación y eliminación de la solicitud)
+    $stmtDel = $db->prepare("DELETE FROM citas WHERE id = ?");
+    $stmtDel->bind_param("i", $id_cita);
+    $stmtDel->execute();
+    $stmtDel->close();
+
+    // Redirigir después del envío y eliminación e incluir el nombre del servicio para verificación
+    header("Location: admin.php?mensaje=cita_aceptada&servicio=" . urlencode($serv_nombre));
     exit();
 }
 ?>

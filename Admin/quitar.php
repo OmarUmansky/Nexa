@@ -1,17 +1,39 @@
 <?php
 require_once "../db.php"; // conecta la base de datos
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") { // revisa si el form se mandó en post
-    $ci_usuario = $_POST['ci_usuario']; // agarra el valor del campo ci y lo guarda en ci
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $ci_usuario = intval($_POST['ci_usuario'] ?? 0);
+    $role = $_POST['role'] ?? 'barbero';
 
-    if ($ci_usuario) { // comprueba que no ande vacio y si anda vacio no hace nada
-        $delete = $db->query("DELETE FROM empleado WHERE ci_usuario='$ci_usuario'"); // la consulta para borrar el empleado del sql
-        if ($delete) {
-            header("Location: admin.php");
-            exit; // si se borra te manda a admin.php y si no te sale el error
-        } else {
-            echo "Error al eliminar el barbero <a href='admin.php'>Volver</a>";
-        }
+    if ($ci_usuario <= 0) {
+        header('Location: admin.php');
+        exit;
+    }
+
+    // Mapear role a tabla
+    if ($role === 'cliente') {
+        $table = 'cliente';
+    } else {
+        // aceptar 'barbero' como empleado
+        $table = 'empleado';
+    }
+
+    // Usar prepared statement para borrar
+    $stmt = $db->prepare("DELETE FROM `" . $table . "` WHERE ci_usuario = ?");
+    if (!$stmt) {
+        echo "Error en la consulta. <a href='admin.php'>Volver</a>";
+        exit;
+    }
+    $stmt->bind_param('i', $ci_usuario);
+    if ($stmt->execute()) {
+        $stmt->close();
+        header('Location: admin.php');
+        exit;
+    } else {
+        $err = htmlspecialchars($stmt->error);
+        $stmt->close();
+        echo "Error al eliminar el usuario: {$err} <a href='admin.php'>Volver</a>";
+        exit;
     }
 }
 ?>

@@ -50,24 +50,22 @@ body {
 }
 
 .contenedor .login {
-    width: 500px;
-    height: 600px;
+    width: 460px;
     background: #480d5f;
     color: #333;
-    box-shadow: 0 0 50px rgba(0, 0, 0, 0.1);
-    padding: 60px 40px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.12);
+    padding: 28px 22px;
 }
 
 .contenedor .login h2 {
     text-align: center;
-    font-size: 2.5rem;
+    font-size: 2rem;
     font-weight: 600;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
     color: #fff;
-    text-shadow: 
-        5px 3px 0 #000000,
-        5px 6px 0 #000000,
-        8px 7px 0 #000000;
+    text-shadow:
+        3px 2px 0 rgba(0,0,0,0.85),
+        4px 3px 0 rgba(0,0,0,0.75);
 }
 
 .contenedor .login form {
@@ -77,14 +75,14 @@ body {
 
 .contenedor .login form input {
     width: 100%;
-    height: 50px;
+    height: 44px;
     background: #ffffff;
-    border-radius: 5px;
+    border-radius: 6px;
     outline: none;
     border: none;
-    margin-bottom: 20px;
-    padding: 0 15px;
-    font-size: 16px;
+    margin-bottom: 14px;
+    padding: 0 12px;
+    font-size: 14px;
     font-weight: 500;
     color: #333;
 }
@@ -106,20 +104,24 @@ body {
 }
 
 .contenedor2 img{
-    width: 502px;
-    height: 568px;
+    width: 490px;
+    height: 800px;
+    height: auto;
+    max-height: calc(100vh - 60px);
+    object-fit: cover;
+    border-radius: 6px 0 0 6px;
 }
 
 select{
     width: 100%;
-    height: 50px;
+    height: 44px;
     background: #ffffff;
-    border-radius: 5px;
+    border-radius: 6px;
     outline: none;
     border: none;
-    margin-bottom: 20px;
+    margin-bottom: 14px;
     padding: 0 10px;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 500;
     color: #333;
 }
@@ -136,20 +138,18 @@ h3{
 }
 
 button{
-    padding: 10px 120px;
+    width: 100%;
+    padding: 10px 14px;
     background: #000000;
     color: #fff;
     border: none;
-    border-radius: 5px;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 16px;
-    font-weight: 500;
-    margin-bottom: 20px;
-    transition: 0.3s;
-    justify-content: center;
-    align-items: center;
-    display: flex;
-    margin-left: 10%;
+    font-size: 15px;
+    font-weight: 600;
+    margin: 12px 0 6px 0;
+    transition: 0.18s;
+    display: block;
 }
 
 button:hover{
@@ -170,4 +170,20 @@ button:hover{
 
 .btn-servicio.activo {
     opacity: 0.6;
+}
+
+@media (max-width: 760px) {
+    .contenedor { align-items: flex-start; padding-top: 12px; }
+    .contenedor2 { flex-direction: column; align-items: center; }
+    .contenedor2 img { width: 88%; max-width: 380px; margin-bottom: 12px; border-radius: 6px; }
+    .contenedor .login { width: 92%; padding: 16px; }
+    .contenedor .login h2 { font-size: 1.9rem; }
+    .botones-servicio { gap: 10px; }
+}
+
+@media (max-width: 420px) {
+    .contenedor .login h2 { font-size: 1.6rem; }
+    .contenedor .login form input, select { height: 42px; font-size: 13px; }
+    .botones-servicio .btn-servicio { padding: 8px 18px; }
+    button { padding: 10px; font-size: 14px; }
 }

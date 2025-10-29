@@ -1,33 +1,54 @@
 <?php
-require_once "../db.php"; // conecta a la base de datos
+require_once __DIR__ . '/../db.php'; // conecta a la base de datos
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") { // verifica si la solicitud es post
-    $ci = $_POST['ci_usuario']; // guarda todo lo que el usuario escribio en cada coso
-    $correo = $_POST['correo'];
-    $telefono = $_POST['telefono'];
-    $ciudad = $_POST['ciudad'];
-    $nombre = $_POST['nombre'];
-    $apellido = $_POST['apellido'];
-    $password = $_POST['contraseña'];
-    $hash = password_hash($password, PASSWORD_DEFAULT); // hashea la contraseña
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $ci = isset($_POST['ci_usuario']) ? intval($_POST['ci_usuario']) : 0;
+    $correo = trim($_POST['correo'] ?? '');
+    $telefono = trim($_POST['telefono'] ?? '');
+    $nombre = trim($_POST['nombre'] ?? '');
+    $apellido = trim($_POST['apellido'] ?? '');
+    $password = $_POST['contraseña'] ?? '';
 
-    if ($ci != "" && $correo != "" && $telefono != "" && $nombre != "" && $apellido != "" && $password != "") { // revisa si hay campos vacios
-
-        $check = $db->query("SELECT * FROM cliente WHERE correo='$correo' OR ci_usuario='$ci'"); // busca si ya existe un usuario con ese correo o cedula
-        if ($check->num_rows > 0) { // te dice si hay un usuario con ese correo o cedula
-            echo "Este usuario ya está registrado <a href='register.php'>Volver</a>";
+    
+    if ($ci !== 0 && $correo !== '' && $telefono !== '' && $nombre !== '' && $apellido !== '' && $password !== '') {
+        
+        if ($stmt = $db->prepare('SELECT ci_usuario FROM cliente WHERE correo = ? OR ci_usuario = ? LIMIT 1')) {
+            $stmt->bind_param('si', $correo, $ci);
+            $stmt->execute();
+            $stmt->store_result();
+            if ($stmt->num_rows > 0) {
+                echo "Este usuario ya está registrado <a href='register.php'>Volver</a>";
+                $stmt->close();
+                exit;
+            }
+            $stmt->close();
         } else {
-            $insert = $db->query("INSERT INTO cliente (ci_usuario,nombre,apellido,ciudad,correo,contraseña,telefono) 
-                                  VALUES ('$ci','$nombre','$apellido','$ciudad','$correo','$hash','$telefono')"); // inserta los datos del usuario en la base de datos
-            if ($insert) {
-                header("Location: ../Login/login.php"); // si la insercion funciona te manda al login
+            echo "Error en la verificación del usuario. <a href='register.php'>Volver</a>";
+            exit;
+        }
+
+        
+        $hash = password_hash($password, PASSWORD_DEFAULT);
+        if ($ins = $db->prepare('INSERT INTO cliente (ci_usuario, nombre, apellido, correo, contraseña, telefono) VALUES (?, ?, ?, ?, ?, ?)')) {
+            $ins->bind_param('isssss', $ci, $nombre, $apellido, $correo, $hash, $telefono);
+            if ($ins->execute()) {
+                $ins->close();
+                header('Location: ../Login/login.php');
+                exit;
             } else {
                 echo "Error al registrarse <a href='register.php'>Volver</a>";
-            } // si sale mal te manda error al registrarse
+                $ins->close();
+                exit;
+            }
+        } else {
+            echo "Error preparando la inserción. <a href='register.php'>Volver</a>";
+            exit;
         }
 
     } else {
         echo "Por favor completa todos los campos <a href='register.php'>Volver</a>";
+        exit;
     }
 }
+
 ?>

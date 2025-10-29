@@ -14,9 +14,11 @@
 }
 
 body{
-    height: 100vh;
-    background: linear-gradient(#ffffff, #565656,);
-    background-repeat: no-repeat;
+  height: 100vh;
+  background: linear-gradient(#ffffff, #565656,);
+  background-repeat: no-repeat;
+  /* Añadido padding-top para dejar espacio cuando el nav está fijo */
+  padding-top: 70px;
 }
 
 .nav {
@@ -28,6 +30,11 @@ body{
     background: linear-gradient(to right, #000000, #252525);
     padding: 13px;
     letter-spacing: 1px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
 }
 
 .nav .left {

@@ -111,6 +111,12 @@ body {
     margin-bottom: 20px;
 }
 
+/* If the grid has an odd number of items (e.g. ci, correo, telefono),
+   make the third item span both columns so fields remain visually symmetric */
+.form-grid > input:nth-child(3) {
+    grid-column: 1 / -1;
+}
+
 .form-row {
     display: flex;
     gap: 15px;

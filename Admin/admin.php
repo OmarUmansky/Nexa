@@ -8,13 +8,18 @@
 </head>
 <body>
 
-<div class="sidebar">
+  <div class="sidebar">
   <h2>Panel Admin</h2>
-  <a href="#" onclick="mostrarVentana('agregar')">Agregar</a>
-  <a href="#" onclick="mostrarVentana('quitar')">Quitar</a>
-  <a href="#" onclick="mostrarVentana('editar')">Editar</a>
+  <div class="menu-group">
+    <button id="userFuncsBtn" class="hamburger">Funciones Usuarios</button>
+    <div id="userFuncsMenu" class="submenu">
+      <a href="#" onclick="mostrarVentana('agregar')">Agregar usuario</a>
+      <a href="#" onclick="mostrarVentana('quitar')">Quitar usuario</a>
+      <a href="#" onclick="mostrarVentana('editar')">Editar usuario</a>
+      <a href="#" onclick="mostrarVentana('usuarios')">Usuarios</a>
+    </div>
+  </div>
   <a href="#" onclick="mostrarVentana('servicios')">Servicios</a>
-  <a href="#" onclick="mostrarVentana('usuarios')">Usuarios</a>
   <a href="#" onclick="mostrarVentana('citas')">Citas</a>
 </div>
 
@@ -25,8 +30,8 @@
   </div>
 
   <div id="agregar" class="ventana">
-    <h1>Agregar</h1>
-    <p>Aquí puedes agregar nuevos barberos</p>
+    <h1>Agregar usuarios</h1>
+    <p>Aquí puedes agregar nuevos usuarios (barbero o cliente).</p>
     <form class="agregar" action="agregar.php" method="POST">
       <label for="ci_usuario">Cédula:</label>
       <input type="text" name="ci_usuario" id="ci_usuario" required>
@@ -43,13 +48,14 @@
       <label for="contraseña">Contraseña:</label>
       <input type="password" name="contraseña" id="contraseña" required>
 
-      <label for="horario_inc">Horario de entrada:</label>
-      <input type="time" name="horario_inc" id="horario_inc" required>
+      <label for="rol">Rol:</label>
+      <select name="rol" id="rol" required>
+        <option value="">-- Seleccione un rol --</option>
+        <option value="barbero">Barbero (empleado)</option>
+        <option value="cliente">Cliente</option>
+      </select>
 
-      <label for="horario_fin">Horario de salida:</label>
-      <input type="time" name="horario_fin" id="horario_fin" required>
-
-      <button type="submit">Agregar Barbero</button>
+      <button type="submit">Agregar Usuario</button>
     </form>
   </div>
 
@@ -58,7 +64,8 @@
     <?php
     require_once "../db.php";
 
-    $resultado = $db->query("SELECT * FROM citas ORDER BY fecha DESC");
+  // Traer citas junto con el nombre del servicio (si existe)
+  $resultado = $db->query("SELECT c.*, s.nombre_servicio FROM citas c LEFT JOIN servicio s ON c.servicio = s.id_servicio ORDER BY c.fecha DESC");
 
     if ($resultado->num_rows > 0) {
         echo "<table class='tabla-barberos'>
@@ -74,11 +81,41 @@
                 </thead>
                 <tbody>";
 
-        while ($cita = $resultado->fetch_assoc()) {
+    // Map de servicios (fallback en caso de que no exista fila en la tabla `servicio`)
+    $servicios_map = [
+      '1' => 'Corte de cabello',
+      '2' => 'Tintado',
+      '3' => 'Tratamiento capilar',
+      '4' => 'Lavado de cabello',
+      '5' => 'Arreglo de barba',
+      '6' => 'Brushing',
+      '7' => 'Coloración',
+      '8' => 'Claritos',
+      '9' => 'Servicio maquillaje',
+      '10' => 'Mantenimiento de cabello',
+      '11' => 'Botox',
+      '12' => 'Pelo dañado',
+      '13' => 'Keratina',
+      '14' => 'Baño de crema',
+      '15' => 'Células madre',
+      '16' => 'Tratamiento de ampollas'
+    ];
+
+    while ($cita = $resultado->fetch_assoc()) {
+      // Mostrar nombre del servicio si está disponible desde el JOIN,
+      // si no, buscar en el mapa por id; si tampoco existe, mostrar el valor crudo escapado.
+      if (!empty($cita['nombre_servicio'])) {
+        $serv_label = htmlspecialchars($cita['nombre_servicio']);
+      } elseif (isset($servicios_map[(string)$cita['servicio']])) {
+        $serv_label = htmlspecialchars($servicios_map[(string)$cita['servicio']]);
+      } else {
+        $serv_label = htmlspecialchars($cita['servicio']);
+      }
+
             echo "<tr>
                     <td>{$cita['id']}</td>
                     <td>{$cita['usuario']}</td>
-                    <td>{$cita['servicio']}</td>
+                    <td>" . $serv_label . "</td>
                     <td>{$cita['fecha']}</td>
                     <td>{$cita['creado_en']}</td>
                     <td class='acciones'>
@@ -102,49 +139,113 @@
   </div>
 
   <div id="quitar" class="ventana">
-    <h1>Quitar</h1>
-    <p>Acá podes borrar registros</p>
+    <h1>Quitar usuarios</h1>
+    <p>Acá puedes ver y quitar usuarios (clientes y barberos).</p>
     <?php
     require_once "../db.php";
 
-    $resultado = $db->query("SELECT ci_usuario, nombre, apellido, correo FROM empleado");
+    // Traer clientes y empleados
+    $resClientes = $db->query("SELECT ci_usuario, nombre, apellido, correo FROM cliente ORDER BY nombre ASC");
+    $resEmpleados = $db->query("SELECT ci_usuario, nombre, apellido, correo FROM empleado ORDER BY nombre ASC");
 
-    if ($resultado->num_rows > 0) {
-        echo "<table class='tabla-barberos'>";
-        echo "<thead>
-                <tr>
-                    <th>Cédula</th>
-                    <th>Nombre</th>
-                    <th>Apellido</th>
-                    <th>Correo</th>
-                    <th>Acción</th>
-                </tr>
-              </thead>";
-        echo "<tbody>";
-        while ($barbero = $resultado->fetch_assoc()) {
-            echo "<tr>";
-            echo "<td>{$barbero['ci_usuario']}</td>";
-            echo "<td>{$barbero['nombre']}</td>";
-            echo "<td>{$barbero['apellido']}</td>";
-            echo "<td>{$barbero['correo']}</td>";
-            echo "<td> 
-                    <form method='POST' action='quitar.php' style='display:inline;'>
-                        <input type='hidden' name='ci_usuario' value='{$barbero['ci_usuario']}'>
-                        <button type='submit'>Eliminar</button> 
-                    </form>
-                  </td>";
-            echo "</tr>";
-        } 
-        echo "</tbody></table>";
-    } else {
-        echo "<p>No hay barberos registrados </p>";
+    echo "<table class='tabla-barberos'>";
+    echo "<thead>
+            <tr>
+                <th>Cédula</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Correo</th>
+                <th>Rol</th>
+                <th>Acción</th>
+            </tr>
+          </thead>";
+    echo "<tbody>";
+
+    if ($resClientes && $resClientes->num_rows > 0) {
+        while ($u = $resClientes->fetch_assoc()) {
+            $ci = htmlspecialchars($u['ci_usuario']);
+            $nombre = htmlspecialchars($u['nombre']);
+            $apellido = htmlspecialchars($u['apellido']);
+            $correo = htmlspecialchars($u['correo']);
+
+            echo '<tr>';
+            echo '<td>' . $ci . '</td>';
+            echo '<td>' . $nombre . '</td>';
+            echo '<td>' . $apellido . '</td>';
+            echo '<td>' . $correo . '</td>';
+            echo '<td>Cliente</td>';
+            echo '<td>';
+            echo '<form method="POST" action="quitar.php" onsubmit="return confirm(\'¿Eliminar cliente ' . $nombre . '?\');" style="display:inline;">';
+            echo '<input type="hidden" name="ci_usuario" value="' . $ci . '">';
+            echo '<input type="hidden" name="role" value="cliente">';
+            echo '<button type="submit" class="btn-quitar">Eliminar</button>';
+            echo '</form>';
+            echo '</td>';
+            echo '</tr>';
+        }
     }
+
+    if ($resEmpleados && $resEmpleados->num_rows > 0) {
+        while ($u = $resEmpleados->fetch_assoc()) {
+            $ci = htmlspecialchars($u['ci_usuario']);
+            $nombre = htmlspecialchars($u['nombre']);
+            $apellido = htmlspecialchars($u['apellido']);
+            $correo = htmlspecialchars($u['correo']);
+
+            echo '<tr>';
+            echo '<td>' . $ci . '</td>';
+            echo '<td>' . $nombre . '</td>';
+            echo '<td>' . $apellido . '</td>';
+            echo '<td>' . $correo . '</td>';
+            echo '<td>Barbero</td>';
+            echo '<td>';
+            echo '<form method="POST" action="quitar.php" onsubmit="return confirm(\'¿Eliminar barbero ' . $nombre . '?\');" style="display:inline;">';
+            echo '<input type="hidden" name="ci_usuario" value="' . $ci . '">';
+            echo '<input type="hidden" name="role" value="barbero">';
+            echo '<button type="submit" class="btn-quitar">Eliminar</button>';
+            echo '</form>';
+            echo '</td>';
+            echo '</tr>';
+        }
+    }
+
+    echo "</tbody></table>";
     ?>
   </div>
 
   <div id="editar" class="ventana">
-    <h1>Editar</h1>
-    <p>Acá puedes editar registros existentes</p>
+  <h1>Editar usuarios</h1>
+  <p>Acá puedes editar registros existentes. Haz click en "Editar" para abrir el formulario.</p>
+  <?php
+  require_once "../db.php";
+
+  // Obtener usuarios de ambas tablas
+  $clientes = $db->query("SELECT ci_usuario, nombre, apellido, correo FROM cliente ORDER BY nombre ASC");
+  $empleados = $db->query("SELECT ci_usuario, nombre, apellido, correo FROM empleado ORDER BY nombre ASC");
+
+  echo "<table class='tabla-barberos'>";
+  echo "<thead><tr><th>Cédula</th><th>Nombre</th><th>Correo</th><th>Rol</th><th>Acción</th></tr></thead><tbody>";
+
+  if ($clientes && $clientes->num_rows > 0) {
+    while ($u = $clientes->fetch_assoc()) {
+      $ci = htmlspecialchars($u['ci_usuario']);
+      $nombre = htmlspecialchars($u['nombre'] . ' ' . $u['apellido']);
+      $correo = htmlspecialchars($u['correo']);
+      echo "<tr><td>{$ci}</td><td>{$nombre}</td><td>{$correo}</td><td>Cliente</td><td><a class='btn-agregar' href='editar_usuario.php?ci={$ci}'>Editar</a></td></tr>";
+    }
+  }
+
+  if ($empleados && $empleados->num_rows > 0) {
+    while ($u = $empleados->fetch_assoc()) {
+      $ci = htmlspecialchars($u['ci_usuario']);
+      $nombre = htmlspecialchars($u['nombre'] . ' ' . $u['apellido']);
+      $correo = htmlspecialchars($u['correo']);
+      echo "<tr><td>{$ci}</td><td>{$nombre}</td><td>{$correo}</td><td>Barbero</td><td><a class='btn-agregar' href='editar_usuario.php?ci={$ci}'>Editar</a></td></tr>";
+    }
+  }
+
+  echo "</tbody></table>";
+  ?>
   </div>
 
   <div id="servicios" class="ventana">
@@ -157,6 +258,14 @@
     $resultado = $db->query("SELECT id_servicio, nombre_servicio, tipo_servicio, precio, ci_usuario_empleado FROM servicio");
 
     if ($resultado->num_rows > 0) {
+        $empleado_map = [];
+        $resEmp = $db->query("SELECT ci_usuario, nombre, apellido FROM empleado");
+        if ($resEmp && $resEmp->num_rows > 0) {
+            while ($e = $resEmp->fetch_assoc()) {
+                $empleado_map[$e['ci_usuario']] = $e['nombre'] . ' ' . $e['apellido'];
+            }
+        }
+
         echo "<table class='tabla-barberos'>";
         echo "<thead>
                 <tr>
@@ -170,19 +279,25 @@
               </thead>";
         echo "<tbody>";
         while ($servicio = $resultado->fetch_assoc()) {
+            $emp_ci = $servicio['ci_usuario_empleado'];
+            $emp_label = '-';
+            if (!empty($emp_ci)) {
+                $emp_label = isset($empleado_map[$emp_ci]) ? htmlspecialchars($empleado_map[$emp_ci]) : htmlspecialchars($emp_ci);
+            }
+
             echo "<tr>";
             echo "<td>{$servicio['id_servicio']}</td>";
-            echo "<td>{$servicio['nombre_servicio']}</td>";
-            echo "<td>{$servicio['tipo_servicio']}</td>";
-            echo "<td>{$servicio['precio']}</td>";
-            echo "<td>{$servicio['ci_usuario_empleado']}</td>";
+            echo "<td>" . htmlspecialchars($servicio['nombre_servicio']) . "</td>";
+            echo "<td>" . htmlspecialchars($servicio['tipo_servicio']) . "</td>";
+            echo "<td>" . htmlspecialchars($servicio['precio']) . "</td>";
+            echo "<td>{$emp_label}</td>";
             echo "<td class='acciones'>
                     <form method='POST' action='editar_servicio.php' style='display:inline;'>
-                      <input type='hidden' name='id_servicio' value='{$servicio['id_servicio']}'>
+                      <input type='hidden' name='id_servicio' value='" . htmlspecialchars($servicio['id_servicio']) . "'>
                       <button type='submit' class='btn-editar'>Editar</button>
                     </form>
                     <form method='POST' action='borrar_servicio.php' style='display:inline;'>
-                      <input type='hidden' name='id_servicio' value='{$servicio['id_servicio']}'>
+                      <input type='hidden' name='id_servicio' value='" . htmlspecialchars($servicio['id_servicio']) . "'>
                       <button type='submit' class='btn-quitar' style='background-color:#c00;'>Quitar</button>
                     </form>
                   </td>";
@@ -207,5 +322,35 @@
 </div>
 
 <script src="admin.js"></script>
+<?php if (isset($_GET['mensaje'])): ?>
+  <script>
+    (function(){
+      var msg = "<?php echo htmlspecialchars($_GET['mensaje']); ?>";
+      if (msg === 'cita_aceptada') {
+        var serv = new URLSearchParams(window.location.search).get('servicio');
+        if (serv) {
+          alert('La cita se aceptó con éxito. Servicio: ' + serv);
+        } else {
+          alert('La cita se aceptó con éxito.');
+        }
+      } else if (msg === 'cita_eliminada') {
+        alert('La cita fue eliminada.');
+      }
+    })();
+  </script>
+<?php endif; ?>
+<script>
+  // Añadir confirmación en los formularios de eliminación (rechazar cita)
+  document.addEventListener('DOMContentLoaded', function(){
+    var forms = document.querySelectorAll('form[action="eliminar_cita.php"]');
+    forms.forEach(function(f){
+      f.addEventListener('submit', function(e){
+        if (!confirm('¿Desea rechazar esta cita?')) {
+          e.preventDefault();
+        }
+      });
+    });
+  });
+</script>
 </body>
 </html>

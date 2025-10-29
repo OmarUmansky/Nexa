@@ -36,6 +36,53 @@ body {
     transition: background 0.3s;
 }
 
+/* Menu hamburguesa para Funciones Usuarios */
+.menu-group { padding: 6px 8px 8px 8px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+.hamburger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    background: transparent;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    font-family: 'Poppins';
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+.hamburger:focus { outline: none; }
+.hamburger:after {
+    content: '\2630';
+    font-size: 1rem;
+    opacity: 0.95;
+    margin-left: 8px;
+}
+.hamburger.open:after { content: '\25B2'; }
+.submenu {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 260ms ease-in-out, opacity 260ms ease-in-out;
+    opacity: 0;
+    padding-left: 4px;
+}
+.submenu.show { max-height: 400px; opacity: 1; }
+.submenu a {
+    display: block;
+    padding: 10px 20px 10px 30px;
+    font-size: 0.95rem;
+    color: #e6e6e6;
+    text-decoration: none;
+}
+.submenu a:hover { background: rgba(255,255,255,0.03); color: #fff; }
+
+/* make submenu visually consistent with sidebar links */
+.submenu a { border-left: 3px solid transparent; }
+.submenu a:hover { border-left-color: rgba(255,255,255,0.08); }
+
+/* Keep hamburger text on one line */
+.hamburger { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
 .sidebar a:hover {
     background: #333;
 }

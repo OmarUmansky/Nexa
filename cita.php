@@ -1,5 +1,20 @@
 <?php
 session_start();
+require __DIR__ . '/db.php';
+
+$departamento_name = '';
+if (isset($_SESSION['usuario'])) {
+    $usuario_for_dep = $_SESSION['usuario'];
+    if ($stmt = $db->prepare('SELECT d.nombre FROM cliente c JOIN departamento d ON c.ciudad = d.id_departamento WHERE c.nombre = ? LIMIT 1')) {
+        $stmt->bind_param('s', $usuario_for_dep);
+        $stmt->execute();
+        $stmt->bind_result($dep_name_db);
+        if ($stmt->fetch()) {
+            $departamento_name = $dep_name_db;
+        }
+        $stmt->close();
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -24,8 +39,14 @@ session_start();
                         <div class="input-icon">
                             <i class="fa-solid fa-user"></i>
                             <input type="text" name="Nombre" placeholder="Usuario"
-                                value="<?php echo isset($_SESSION['usuario']) ? htmlspecialchars($_SESSION['usuario']) : ''; ?>" 
+                                value="<?php echo isset($_SESSION['usuario']) ? htmlspecialchars($_SESSION['usuario']) : ''; ?>"
                                 <?php echo isset($_SESSION['usuario']) ? 'readonly' : ''; ?>>
+                        </div>
+
+                        <div class="input-icon">
+                            <i class="fa-solid fa-building"></i>
+                            <input type="text" name="Departamento" placeholder="Departamento"
+                                value="<?php echo htmlspecialchars($departamento_name); ?>" readonly>
                         </div>
                           
                         <div class="input-icon">
@@ -55,7 +76,6 @@ session_start();
                                 <option value="14">Baño de crema</option>
                                 <option value="15">Celulas madre</option>
                                 <option value="16">Tratamiento de ampollas</option>
-                                <option value="17">Arreglo de bigote</option>
                             </select>
 
                             <h3>Fecha de la cita</h3>

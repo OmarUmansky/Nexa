@@ -22,3 +22,14 @@ window.addEventListener("load", function() {
       });
   });
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+  const btn = document.getElementById('userFuncsBtn');
+  const menu = document.getElementById('userFuncsMenu');
+  if (!btn || !menu) return;
+  btn.addEventListener('click', function(e) {
+    e.preventDefault();
+    menu.classList.toggle('show');
+    btn.classList.toggle('open');
+  });
+});

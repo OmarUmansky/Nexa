@@ -21,7 +21,6 @@
                                 <input type="number" name="ci_usuario" placeholder="Cédula / Documento" required>
                                 <input type="email" name="correo" placeholder="Correo electrónico" required>
                                 <input type="tel" name="telefono" placeholder="Número de telefono" required>
-                                <input type="text" name="ciudad" placeholder="Ciudad">
                             </div>
         
                             <div class="form-row">

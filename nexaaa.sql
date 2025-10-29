@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 07-10-2025 a las 02:24:11
+-- Tiempo de generación: 28-10-2025 a las 23:51:25
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -61,7 +61,7 @@ CREATE TABLE `cliente` (
   `ci_usuario` int(8) NOT NULL,
   `nombre` varchar(255) DEFAULT NULL,
   `apellido` varchar(255) DEFAULT NULL,
-  `ciudad` varchar(255) DEFAULT NULL,
+  `ciudad` int(9) DEFAULT NULL,
   `correo` varchar(255) DEFAULT NULL,
   `contraseña` varchar(255) DEFAULT NULL,
   `telefono` int(9) DEFAULT NULL,
@@ -73,12 +73,48 @@ CREATE TABLE `cliente` (
 --
 
 INSERT INTO `cliente` (`ci_usuario`, `nombre`, `apellido`, `ciudad`, `correo`, `contraseña`, `telefono`, `tipo`) VALUES
-(0, 'Root', 'Empresa', 'Maldonado', 'admin@gmail.com', '$2y$10$Go4w.Xrqk40nHRVJsgePCeASD1LTtbPAILE.lmx2lpfNtlfDrs.yK', 123456, NULL),
-(324723, 'Dani', 'daniel', 'Maldonado', 'mani@gmail.com', '$2y$10$hYpp6egdJDyj5IR8Mf4Phu.yRVcbHIchxmn/ycuJkNt0huSScysSS', 12313, NULL),
-(12323747, 'Meli', 'Male', 'Maldonado', 'Meli@gmail.com', '$2y$10$aEWnHBEZYoIhmUYxn13zuehl5ASHLcyad/WDo2h7Zete3U9XCTNOy', 734748, NULL),
-(55772929, 'Admin', 'Admin', 'Maldonado', 'admin@gmail.com', '$2y$10$vF1w1cbsF2MDlxnERKnA0OhAptptptuwEthaB7PSSOR2BW5wn9KGC', 12345, NULL),
-(74837623, 'Daji', 'Daji', 'Maldonado', 'dea@gmail.com', '$2y$10$CSp6phU6N0Dy74FoRQ16pOpkdxfCVCqCTA7jZy2wwpvAMAfeLWlDC', 1234763, NULL),
-(2147483647, 'Lupe', 'lupee', 'Maldonado', 'lupe@gmail.com', '$2y$10$sx1MZeVsu/NRd7qLsRVpDegMOSmUA6DdGFq.m0.XQd5YAbSm.sQ/W', 1234773, NULL);
+(0, 'Root', 'Empresa', 9, 'admin@gmail.com', '$2y$10$Go4w.Xrqk40nHRVJsgePCeASD1LTtbPAILE.lmx2lpfNtlfDrs.yK', 123456, NULL),
+(324723, 'Dani', 'daniel', 9, 'mani@gmail.com', '$2y$10$hYpp6egdJDyj5IR8Mf4Phu.yRVcbHIchxmn/ycuJkNt0huSScysSS', 12313, NULL),
+(12323747, 'Meli', 'Male', 9, 'Meli@gmail.com', '$2y$10$aEWnHBEZYoIhmUYxn13zuehl5ASHLcyad/WDo2h7Zete3U9XCTNOy', 734748, NULL),
+(55772929, 'Admin', 'Admin', 9, 'admin@gmail.com', '$2y$10$vF1w1cbsF2MDlxnERKnA0OhAptptptuwEthaB7PSSOR2BW5wn9KGC', 12345, NULL),
+(74837623, 'Daji', 'Daji', 9, 'dea@gmail.com', '$2y$10$CSp6phU6N0Dy74FoRQ16pOpkdxfCVCqCTA7jZy2wwpvAMAfeLWlDC', 1234763, NULL),
+(2147483647, 'Lupe', 'lupee', 9, 'lupe@gmail.com', '$2y$10$sx1MZeVsu/NRd7qLsRVpDegMOSmUA6DdGFq.m0.XQd5YAbSm.sQ/W', 1234773, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `departamento`
+--
+
+CREATE TABLE `departamento` (
+  `id_departamento` int(11) NOT NULL,
+  `nombre` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `departamento`
+--
+
+INSERT INTO `departamento` (`id_departamento`, `nombre`) VALUES
+(1, 'Artigas'),
+(2, 'Canelones'),
+(3, 'Cerro Largo'),
+(4, 'Colonia'),
+(5, 'Durazno'),
+(6, 'Flores'),
+(7, 'Florida'),
+(8, 'Lavalleja'),
+(9, 'Maldonado'),
+(10, 'Montevideo'),
+(11, 'Paysandú'),
+(12, 'Río Negro'),
+(13, 'Rivera'),
+(14, 'Rocha'),
+(15, 'Salto'),
+(16, 'San José'),
+(17, 'Soriano'),
+(18, 'Tacuarembó'),
+(19, 'Treinta y Tres');
 
 -- --------------------------------------------------------
 
@@ -236,7 +272,14 @@ ALTER TABLE `citas`
 -- Indices de la tabla `cliente`
 --
 ALTER TABLE `cliente`
-  ADD PRIMARY KEY (`ci_usuario`);
+  ADD PRIMARY KEY (`ci_usuario`),
+  ADD KEY `cliente_departamento` (`ciudad`);
+
+--
+-- Indices de la tabla `departamento`
+--
+ALTER TABLE `departamento`
+  ADD PRIMARY KEY (`id_departamento`);
 
 --
 -- Indices de la tabla `empleado`
@@ -304,6 +347,12 @@ ALTER TABLE `citas`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
+-- AUTO_INCREMENT de la tabla `departamento`
+--
+ALTER TABLE `departamento`
+  MODIFY `id_departamento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+
+--
 -- AUTO_INCREMENT de la tabla `herramienta`
 --
 ALTER TABLE `herramienta`
@@ -336,6 +385,12 @@ ALTER TABLE `servicio`
 --
 -- Restricciones para tablas volcadas
 --
+
+--
+-- Filtros para la tabla `cliente`
+--
+ALTER TABLE `cliente`
+  ADD CONSTRAINT `cliente_departamento` FOREIGN KEY (`ciudad`) REFERENCES `departamento` (`id_departamento`);
 
 --
 -- Filtros para la tabla `herramienta`

@@ -6,7 +6,7 @@ const btnPeluqueria = botones[1];
 const barberia = [
   { value: "1", text: "Corte de cabello" },
   { value: "5", text: "Arreglo de barba" },
-  { value: "17", text: "Arreglo de bigote" }
+
 ];
 
 const peluqueria = [
@@ -50,3 +50,35 @@ btnPeluqueria.addEventListener("click", () => {
   cargarOpciones(peluqueria);
   activarBoton(btnPeluqueria);
 });
+
+const fechaInput = document.querySelector('input[name="fecha"]');
+
+const inicioHoy = new Date();
+inicioHoy.setHours(0, 0, 0, 0);
+
+const max = new Date(inicioHoy);
+max.setDate(inicioHoy.getDate() + 14);
+max.setHours(23, 0, 0, 0); 
+
+const toLocalISO = (date) => {
+  const offset = date.getTimezoneOffset();
+  const local = new Date(date.getTime() - offset * 60000);
+  return local.toISOString().slice(0, 16);
+};
+
+if (fechaInput) {
+  fechaInput.min = toLocalISO(inicioHoy);
+  fechaInput.max = toLocalISO(max);
+
+  fechaInput.setAttribute("step", 3600);
+
+  fechaInput.addEventListener("input", () => {
+    const valor = fechaInput.value;
+    if (valor) {
+      const fecha = new Date(valor);
+      fecha.setMinutes(0);
+      fecha.setSeconds(0);
+      fechaInput.value = toLocalISO(fecha);
+    }
+  });
+}
